@@ -1,4 +1,4 @@
-package com.visualSounds;
+package com.visualsounds;
 
 import net.runelite.api.Client;
 import net.runelite.client.ui.FontManager;

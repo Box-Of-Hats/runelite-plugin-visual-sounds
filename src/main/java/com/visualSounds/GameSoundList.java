@@ -1,4 +1,4 @@
-package com.visualSounds;
+package com.visualsounds;
 
 import java.util.ArrayList;
 import java.util.List;

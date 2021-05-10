@@ -21,8 +21,8 @@ public class VisualSoundsOverlay extends OverlayPanel {
 
         setPosition(OverlayPosition.DYNAMIC);
         setPosition(OverlayPosition.DETACHED);
-        setPosition(OverlayPosition.TOP_LEFT);
-        setPreferredSize(new Dimension(100, 600));
+        setPosition(OverlayPosition.ABOVE_CHATBOX_RIGHT);
+        setPreferredSize(new Dimension(25, 200));
         this.plugin = plugin;
         this.client = client;
         this.config = config;
@@ -38,7 +38,7 @@ public class VisualSoundsOverlay extends OverlayPanel {
         for (GameSound gs : gameSoundList) {
             renderableEntities.add(
                     LineComponent.builder()
-                            .leftColor(gs.color).right(gs.soundId + "")
+                            .leftColor(gs.color).left(gs.soundId + "")
                             .build());
         }
 

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GameSoundList {
-    private List<GameSound> gameSoundList = new ArrayList<GameSound>();
+    private List<GameSound> gameSoundList = new ArrayList<>();
     private int maxLength = 10;
 
     public GameSoundList() {
@@ -24,7 +24,6 @@ public class GameSoundList {
     public void setMaxLength(int maxLength) {
         this.maxLength = maxLength;
     }
-
 }
 
 

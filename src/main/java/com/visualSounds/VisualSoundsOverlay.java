@@ -1,8 +1,11 @@
 package com.visualSounds;
 
 import net.runelite.api.Client;
+import net.runelite.client.ui.FontManager;
+import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.OverlayPosition;
+import net.runelite.client.ui.overlay.OverlayPriority;
 import net.runelite.client.ui.overlay.components.LayoutableRenderableEntity;
 import net.runelite.client.ui.overlay.components.LineComponent;
 
@@ -23,6 +26,8 @@ public class VisualSoundsOverlay extends OverlayPanel {
         setPosition(OverlayPosition.DETACHED);
         setPosition(OverlayPosition.ABOVE_CHATBOX_RIGHT);
         setPreferredSize(new Dimension(25, 200));
+        setLayer(OverlayLayer.UNDER_WIDGETS);
+        setPriority(OverlayPriority.LOW);
         this.plugin = plugin;
         this.client = client;
         this.config = config;

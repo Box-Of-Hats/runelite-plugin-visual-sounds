@@ -3,6 +3,7 @@ package com.visualsounds;
 import com.google.inject.Provides;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
+import net.runelite.api.events.AreaSoundEffectPlayed;
 import net.runelite.api.events.SoundEffectPlayed;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -43,6 +44,9 @@ public class VisualSoundsPlugin extends Plugin {
 
     private Set<Integer> ignoredSounds = new HashSet<>();
 
+    private boolean displaySoundEffects = true;
+    private boolean displayAreaEffects = false;
+
     @Override
     protected void startUp() throws Exception {
         log.info("Visual sounds started!");
@@ -72,15 +76,36 @@ public class VisualSoundsPlugin extends Plugin {
         addColors(this.config.taggedSoundsCat1(), this.config.category1SoundColor());
         addColors(this.config.taggedSoundsCat2(), this.config.category2SoundColor());
         addColors(this.config.taggedSoundsCat3(), this.config.category3SoundColor());
+
+        displaySoundEffects = config.displaySoundEffects();
+        displayAreaEffects = config.displayAreaSounds();
     }
 
     @Subscribe
     public void onSoundEffectPlayed(SoundEffectPlayed soundEffectPlayed) {
-        int soundId = soundEffectPlayed.getSoundId();
-        if (ignoredSounds.contains(soundId)) {
+        if (!displaySoundEffects)
             return;
-        }
-        Color soundColor = this.soundColors.getOrDefault(soundId, Color.white);
+
+        handleSoundEffect(soundEffectPlayed.getSoundId());
+    }
+
+    @Subscribe
+    public void onAreaSoundEffectPlayed(AreaSoundEffectPlayed areaSoundEffectPlayed) {
+        if (!displayAreaEffects)
+            return;
+
+        handleSoundEffect(areaSoundEffectPlayed.getSoundId());
+    }
+
+    /**
+     * Handle a sound effect based on its id value
+     * @param soundId The id value of the sound
+     */
+    private void handleSoundEffect(int soundId) {
+        if (ignoredSounds.contains(soundId))
+            return;
+
+        Color soundColor = soundColors.getOrDefault(soundId, Color.white);
 
         gameSoundList.add(new GameSound(soundId, soundColor));
     }

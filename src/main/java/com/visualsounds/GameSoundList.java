@@ -13,7 +13,7 @@ public class GameSoundList {
     public void add(GameSound gameSound) {
         this.gameSoundList.add(0, gameSound);
         if (this.gameSoundList.size() > maxLength) {
-            this.gameSoundList = this.gameSoundList.subList(0, maxLength);
+            this.gameSoundList = new ArrayList<>(gameSoundList.subList(0, maxLength));
         }
     }
 

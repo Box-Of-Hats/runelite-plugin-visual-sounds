@@ -112,4 +112,14 @@ public interface VisualSoundsConfig extends Config {
     default String ignoredSounds() {
         return "";
     }
+
+    @ConfigItem(
+            keyName = "showOnlyTagged",
+            name = "Show Only Tagged Sounds",
+            description = "Show only the sounds that are recolored.",
+            position = 10
+    )
+    default boolean showOnlyTagged() {
+        return false;
+    }
 }

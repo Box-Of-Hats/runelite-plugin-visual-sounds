@@ -46,6 +46,7 @@ public class VisualSoundsPlugin extends Plugin {
 
     private boolean displaySoundEffects = true;
     private boolean displayAreaEffects = false;
+    private boolean showOnlyTagged = false;
 
     @Override
     protected void startUp() throws Exception {
@@ -79,6 +80,7 @@ public class VisualSoundsPlugin extends Plugin {
 
         displaySoundEffects = config.displaySoundEffects();
         displayAreaEffects = config.displayAreaSounds();
+        showOnlyTagged = config.showOnlyTagged();
     }
 
     @Subscribe
@@ -103,6 +105,8 @@ public class VisualSoundsPlugin extends Plugin {
      */
     private void handleSoundEffect(int soundId) {
         if (ignoredSounds.contains(soundId))
+            return;
+        if (showOnlyTagged && !soundColors.containsKey(soundId))
             return;
 
         Color soundColor = soundColors.getOrDefault(soundId, Color.white);

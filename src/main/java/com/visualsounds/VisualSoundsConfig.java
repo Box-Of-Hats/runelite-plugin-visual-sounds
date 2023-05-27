@@ -7,7 +7,7 @@ import net.runelite.client.config.Range;
 
 import java.awt.*;
 
-@ConfigGroup("example")
+@ConfigGroup("visualsounds")
 public interface VisualSoundsConfig extends Config {
     @ConfigItem(
             keyName = "displaySoundEffects",

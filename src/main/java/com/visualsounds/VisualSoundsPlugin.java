@@ -40,6 +40,12 @@ public class VisualSoundsPlugin extends Plugin {
     @Inject
     private OverlayManager overlayManager;
 
+    @Inject
+    private ConfigManager configManager;
+
+    private static final String OLD_CONFIG_GROUP = "example";
+    private static final String CONFIG_GROUP = "visualsounds";
+
     private HashMap<Integer, Color> soundColors = new HashMap<>();
 
     private Set<Integer> ignoredSounds = new HashSet<>();
@@ -51,6 +57,7 @@ public class VisualSoundsPlugin extends Plugin {
     @Override
     protected void startUp() throws Exception {
         log.info("Visual sounds started!");
+        this.migrateOldConfigItems();
         this.overlayManager.add(overlay);
         this.reload();
     }
@@ -64,6 +71,31 @@ public class VisualSoundsPlugin extends Plugin {
     protected void shutDown() throws Exception {
         log.info("Visual sounds stopped!");
         this.overlayManager.remove(overlay);
+    }
+
+    private <T> void migrateOldConfigItem(String key, Class<T> clazz) {
+        T old = this.configManager.getConfiguration(OLD_CONFIG_GROUP, key, clazz);
+        if (old != null) {
+            log.debug("Importing config item {}: {}", key, old);
+            this.configManager.setConfiguration(CONFIG_GROUP, key, old);
+            this.configManager.unsetConfiguration(OLD_CONFIG_GROUP, key);
+        }
+    }
+
+    private void migrateOldConfigItems() {
+        this.migrateOldConfigItem("displaySoundEffects", Boolean.TYPE);
+        this.migrateOldConfigItem("displayAreaSounds", Boolean.TYPE);
+        this.migrateOldConfigItem("soundCountLimit", Integer.TYPE);
+
+        this.migrateOldConfigItem("category1SoundColor", Color.class);
+        this.migrateOldConfigItem("taggedSoundsCat1", String.class);
+        this.migrateOldConfigItem("category2SoundColor", Color.class);
+        this.migrateOldConfigItem("taggedSoundsCat2", String.class);
+        this.migrateOldConfigItem("category3SoundColor", Color.class);
+        this.migrateOldConfigItem("taggedSoundsCat3", String.class);
+
+        this.migrateOldConfigItem("ignoredSounds", String.class);
+        this.migrateOldConfigItem("showOnlyTagged", Boolean.TYPE);
     }
 
     /**

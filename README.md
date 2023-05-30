@@ -11,5 +11,6 @@ This is aimed at players who want to be able to "hear" game sounds but are unabl
 -   Show a specified number of sound effect IDs on screen
 -   Configurable list of ignored sound effects
 -   Configurable list of highlighted sound effects
+-   Toggle sound names on or off
 
-![In-game screenshot](docs/in-game.jpg)
+![In-game screenshot](docs/in-game.png)

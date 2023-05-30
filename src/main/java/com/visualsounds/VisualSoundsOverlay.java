@@ -37,7 +37,7 @@ public class VisualSoundsOverlay extends OverlayPanel {
         for (GameSound gs : gameSoundList) {
             renderableEntities.add(
                     LineComponent.builder()
-                            .leftColor(gs.color).left(gs.soundId + "")
+                            .leftColor(gs.color).left(gs.label)
                             .build());
         }
 

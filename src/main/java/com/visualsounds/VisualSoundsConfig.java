@@ -122,4 +122,15 @@ public interface VisualSoundsConfig extends Config {
     default boolean showOnlyTagged() {
         return false;
     }
+
+    @ConfigItem(
+            keyName = "showSoundNames",
+            name = "Show Sound Names",
+            description = "Show the names of sounds where possible",
+            position = 11
+    )
+    default boolean showSoundNames() {
+        return true;
+    }
+
 }

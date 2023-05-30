@@ -34,6 +34,8 @@ public class VisualSoundsPlugin extends Plugin {
 
     public GameSoundList gameSoundList = new GameSoundList();
 
+    private SoundNames soundNames;
+
     @Inject
     private VisualSoundsOverlay overlay;
 
@@ -59,6 +61,7 @@ public class VisualSoundsPlugin extends Plugin {
         log.info("Visual sounds started!");
         this.migrateOldConfigItems();
         this.overlayManager.add(overlay);
+        this.soundNames = new SoundNames();
         this.reload();
     }
 
@@ -117,16 +120,18 @@ public class VisualSoundsPlugin extends Plugin {
 
     @Subscribe
     public void onSoundEffectPlayed(SoundEffectPlayed soundEffectPlayed) {
-        if (!displaySoundEffects)
+        if (!displaySoundEffects) {
             return;
+        }
 
         handleSoundEffect(soundEffectPlayed.getSoundId());
     }
 
     @Subscribe
     public void onAreaSoundEffectPlayed(AreaSoundEffectPlayed areaSoundEffectPlayed) {
-        if (!displayAreaEffects)
+        if (!displayAreaEffects) {
             return;
+        }
 
         handleSoundEffect(areaSoundEffectPlayed.getSoundId());
     }
@@ -136,14 +141,27 @@ public class VisualSoundsPlugin extends Plugin {
      * @param soundId The id value of the sound
      */
     private void handleSoundEffect(int soundId) {
-        if (ignoredSounds.contains(soundId))
+        if (ignoredSounds.contains(soundId)) {
             return;
-        if (showOnlyTagged && !soundColors.containsKey(soundId))
+        }
+        if (showOnlyTagged && !soundColors.containsKey(soundId)) {
             return;
+        }
 
         Color soundColor = soundColors.getOrDefault(soundId, Color.white);
 
-        gameSoundList.add(new GameSound(soundId, soundColor));
+        GameSound gameSound = new GameSound(soundId, soundColor);
+
+        if (config.showSoundNames()){
+            // Attempt to add the name of the sound to the display
+            String soundName = this.soundNames.GetSoundName(soundId);
+            if (soundName != null) {
+                //gameSound.label = String.format("%i (%s)",soundName, gameSound.soundId);
+                gameSound.label = String.format("%s (%d)",soundName, gameSound.soundId);
+            }
+        }
+
+        gameSoundList.add(gameSound);
     }
 
     @Provides

@@ -3,7 +3,9 @@ package com.visualsounds;
 import com.google.inject.Provides;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
+import net.runelite.api.Varbits;
 import net.runelite.api.events.AreaSoundEffectPlayed;
+import net.runelite.api.events.GameTick;
 import net.runelite.api.events.SoundEffectPlayed;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -55,6 +57,8 @@ public class VisualSoundsPlugin extends Plugin {
     private boolean displaySoundEffects = true;
     private boolean displayAreaEffects = false;
     private boolean showOnlyTagged = false;
+
+    private int regionId = -1;
 
     @Override
     protected void startUp() throws Exception {
@@ -119,6 +123,11 @@ public class VisualSoundsPlugin extends Plugin {
     }
 
     @Subscribe
+    public void onGameTick(GameTick event) {
+        this.regionId = client.getLocalPlayer().getWorldLocation().getRegionID();
+    }
+
+    @Subscribe
     public void onSoundEffectPlayed(SoundEffectPlayed soundEffectPlayed) {
         if (!displaySoundEffects) {
             return;
@@ -141,7 +150,7 @@ public class VisualSoundsPlugin extends Plugin {
      * @param soundId The id value of the sound
      */
     private void handleSoundEffect(int soundId) {
-        if (ignoredSounds.contains(soundId)) {
+        if (ignoredSounds.contains(soundId) || ignoreBoss()) {
             return;
         }
         if (showOnlyTagged && !soundColors.containsKey(soundId)) {
@@ -162,6 +171,32 @@ public class VisualSoundsPlugin extends Plugin {
         }
 
         gameSoundList.add(gameSound);
+    }
+
+    /**
+     * @return whether the plugin should be temporarily disabled to comply with third-party guidelines
+     * @see <a href="https://secure.runescape.com/m=news/third-party-client-guidelines?oldschool=1">Guidelines</a>
+     */
+    private boolean ignoreBoss() {
+        // disable plugin for DT2 bosses (Vardorvis, Leviathan, Whisperer, Sucellus)
+        if (regionId == 4405 || regionId == 8291 || regionId == 10595 || regionId == 12132) {
+            return true;
+        }
+
+        // disable plugin for Vorkath
+        if (regionId == 9023) {
+            return true;
+        }
+
+        // disable plugin in Inferno & TzHaar Fight Cave
+        if (regionId == 9043 || regionId == 9551) {
+            return true;
+        }
+
+        // disable plugin in raids
+        return client.getVarbitValue(Varbits.IN_RAID) > 0
+                || client.getVarbitValue(Varbits.TOA_RAID_LEVEL) > 0
+                || client.getVarbitValue(Varbits.THEATRE_OF_BLOOD) > 0;
     }
 
     @Provides

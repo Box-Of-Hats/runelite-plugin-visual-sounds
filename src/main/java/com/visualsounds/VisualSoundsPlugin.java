@@ -1,5 +1,6 @@
 package com.visualsounds;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
@@ -47,6 +48,8 @@ public class VisualSoundsPlugin extends Plugin {
 
     private static final String OLD_CONFIG_GROUP = "example";
     private static final String CONFIG_GROUP = "visualsounds";
+    
+    private static final Set<Integer> SOUND_DENY_LIST;
 
     private HashMap<Integer, Color> soundColors = new HashMap<>();
 
@@ -141,7 +144,7 @@ public class VisualSoundsPlugin extends Plugin {
      * @param soundId The id value of the sound
      */
     private void handleSoundEffect(int soundId) {
-        if (ignoredSounds.contains(soundId)) {
+        if (ignoredSounds.contains(soundId) || SOUND_DENY_LIST.contains(soundId)) {
             return;
         }
         if (showOnlyTagged && !soundColors.containsKey(soundId)) {
@@ -194,5 +197,12 @@ public class VisualSoundsPlugin extends Plugin {
                 .filter(NumberUtils::isParsable)
                 .map(Integer::parseInt)
                 .collect(Collectors.toSet());
+    }
+
+    static {
+        // https://secure.runescape.com/m=news/third-party-client-guidelines?oldschool=1
+        SOUND_DENY_LIST = ImmutableSet.of(
+                7030, 7040, 7041 // was used to indicate what prayers to use against Leviathan
+        );
     }
 }

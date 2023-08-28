@@ -4,6 +4,7 @@ import com.google.inject.Provides;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.Varbits;
+import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.AreaSoundEffectPlayed;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.SoundEffectPlayed;
@@ -124,7 +125,7 @@ public class VisualSoundsPlugin extends Plugin {
 
     @Subscribe
     public void onGameTick(GameTick event) {
-        this.regionId = client.getLocalPlayer().getWorldLocation().getRegionID();
+        this.regionId = WorldPoint.fromLocalInstance(client, client.getLocalPlayer().getLocalLocation()).getRegionID();
     }
 
     @Subscribe

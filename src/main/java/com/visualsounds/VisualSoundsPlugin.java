@@ -178,6 +178,11 @@ public class VisualSoundsPlugin extends Plugin {
      * @see <a href="https://secure.runescape.com/m=news/third-party-client-guidelines?oldschool=1">Guidelines</a>
      */
     private boolean ignoreBoss() {
+        // disable plugin for Alchemical Hydra
+        if (regionId == 5536) {
+            return true;
+        }
+
         // disable plugin for DT2 bosses (Vardorvis, Leviathan, Whisperer, Sucellus)
         if (regionId == 4405 || regionId == 8291 || regionId == 10595 || regionId == 12132) {
             return true;

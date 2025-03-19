@@ -116,7 +116,7 @@ public interface VisualSoundsConfig extends Config {
     @ConfigItem(
             keyName = "showOnlyTagged",
             name = "Show Only Tagged Sounds",
-            description = "Show only the sounds that are recolored.",
+            description = "Show only the sounds that are recoloured.",
             position = 10
     )
     default boolean showOnlyTagged() {
@@ -133,4 +133,13 @@ public interface VisualSoundsConfig extends Config {
         return true;
     }
 
+    @ConfigItem(
+            keyName = "customSoundLabels",
+            name = "Custom Sound Labels",
+            description = "A list of custom sound labels. Format: soundId:label, separated by a new line (e.g. 369:Cow attacks)",
+            position = 12
+    )
+    default String customSoundLabels() {
+        return "";
+    }
 }

@@ -52,7 +52,7 @@ public class VisualSoundsPlugin extends Plugin {
     private static final String CONFIG_GROUP = "visualsounds";
 
     private HashMap<Integer, Color> soundColors = new HashMap<>();
-
+    private HashMap<Integer, String> customLabels = new HashMap<>();
     private Set<Integer> ignoredSounds = new HashSet<>();
 
     private boolean displaySoundEffects = true;
@@ -114,6 +114,8 @@ public class VisualSoundsPlugin extends Plugin {
         this.gameSoundList.add(new GameSound());
         this.ignoredSounds = getNumbersFromConfig(this.config.ignoredSounds());
         this.soundColors = new HashMap<>();
+        // Parse custom labels using colon as the delimiter.
+        this.customLabels = parseCustomLabels(config.customSoundLabels());
         addColors(this.config.taggedSoundsCat1(), this.config.category1SoundColor());
         addColors(this.config.taggedSoundsCat2(), this.config.category2SoundColor());
         addColors(this.config.taggedSoundsCat3(), this.config.category3SoundColor());
@@ -121,6 +123,29 @@ public class VisualSoundsPlugin extends Plugin {
         displaySoundEffects = config.displaySoundEffects();
         displayAreaEffects = config.displayAreaSounds();
         showOnlyTagged = config.showOnlyTagged();
+    }
+
+    private static Set<Integer> getNumbersFromConfig(String source) {
+        return Arrays.stream(source.split(","))
+                .map(String::trim)
+                .filter(NumberUtils::isParsable)
+                .map(Integer::parseInt)
+                .collect(Collectors.toSet());
+    }
+
+    // New method to parse custom labels using colon as the delimiter.
+    private HashMap<Integer, String> parseCustomLabels(String configValue) {
+        HashMap<Integer, String> labelsMap = new HashMap<>();
+        if (configValue == null || configValue.isEmpty()) {
+            return labelsMap;
+        }
+        for (String entry : configValue.split("[,\\n]+")) {
+            String[] parts = entry.split(":");
+            if (parts.length == 2 && NumberUtils.isDigits(parts[0].trim())) {
+                labelsMap.put(Integer.parseInt(parts[0].trim()), parts[1].trim());
+            }
+        }
+        return labelsMap;
     }
 
     @Subscribe
@@ -133,7 +158,6 @@ public class VisualSoundsPlugin extends Plugin {
         if (!displaySoundEffects) {
             return;
         }
-
         handleSoundEffect(soundEffectPlayed.getSoundId());
     }
 
@@ -142,7 +166,6 @@ public class VisualSoundsPlugin extends Plugin {
         if (!displayAreaEffects) {
             return;
         }
-
         handleSoundEffect(areaSoundEffectPlayed.getSoundId());
     }
 
@@ -159,15 +182,15 @@ public class VisualSoundsPlugin extends Plugin {
         }
 
         Color soundColor = soundColors.getOrDefault(soundId, Color.white);
-
         GameSound gameSound = new GameSound(soundId, soundColor);
 
-        if (config.showSoundNames()){
-            // Attempt to add the name of the sound to the display
+        // If a custom label exists, use it (displaying only the custom text).
+        if (customLabels.containsKey(soundId)) {
+            gameSound.label = customLabels.get(soundId);
+        } else if (config.showSoundNames()) {
             String soundName = this.soundNames.GetSoundName(soundId);
             if (soundName != null) {
-                //gameSound.label = String.format("%i (%s)",soundName, gameSound.soundId);
-                gameSound.label = String.format("%s (%d)",soundName, gameSound.soundId);
+                gameSound.label = String.format("%s (%d)", soundName, soundId);
             }
         }
 
@@ -221,19 +244,5 @@ public class VisualSoundsPlugin extends Plugin {
         for (Integer categorySound : categorySounds) {
             this.soundColors.computeIfAbsent(categorySound, o -> colorToAdd);
         }
-    }
-
-    /**
-     * Get a list of integers from a source string, separated by commas
-     *
-     * @param source The configuration source string
-     * @return A set of integers parsed from the source string
-     */
-    private static Set<Integer> getNumbersFromConfig(String source) {
-        return Arrays.stream(source.split(","))
-                .map(String::trim)
-                .filter(NumberUtils::isParsable)
-                .map(Integer::parseInt)
-                .collect(Collectors.toSet());
     }
 }

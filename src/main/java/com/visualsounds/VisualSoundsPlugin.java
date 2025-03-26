@@ -37,6 +37,11 @@ public class VisualSoundsPlugin extends Plugin {
 
     public GameSoundList gameSoundList = new GameSoundList();
 
+    /**
+     * Is the plugin currently disabled due to the player being in a blocked area?
+     */
+    public boolean isDisabled = false;
+
     private SoundNames soundNames;
 
     @Inject
@@ -174,9 +179,16 @@ public class VisualSoundsPlugin extends Plugin {
      * @param soundId The id value of the sound
      */
     private void handleSoundEffect(int soundId) {
-        if (ignoredSounds.contains(soundId) || ignoreBoss()) {
+        if (ignoreBoss()){
+            isDisabled = true;
             return;
         }
+        isDisabled = false;
+
+        if (ignoredSounds.contains(soundId)) {
+            return;
+        }
+
         if (showOnlyTagged && !soundColors.containsKey(soundId)) {
             return;
         }

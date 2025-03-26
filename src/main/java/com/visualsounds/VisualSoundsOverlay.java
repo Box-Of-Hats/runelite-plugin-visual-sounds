@@ -34,6 +34,15 @@ public class VisualSoundsOverlay extends OverlayPanel {
 
         List<GameSound> gameSoundList = this.plugin.gameSoundList.getGameSoundList();
 
+        if (this.plugin.isDisabled) {
+            // Show disabled message if player is in a blocked area
+            renderableEntities.add(
+                    LineComponent.builder()
+                            .left("Plugin disabled in this area")
+                            .build());
+            return super.render(graphics2D);
+        }
+
         for (GameSound gs : gameSoundList) {
             renderableEntities.add(
                     LineComponent.builder()

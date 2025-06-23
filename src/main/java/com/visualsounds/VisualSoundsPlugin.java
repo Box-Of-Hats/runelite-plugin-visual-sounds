@@ -124,6 +124,9 @@ public class VisualSoundsPlugin extends Plugin {
         addColors(this.config.taggedSoundsCat1(), this.config.category1SoundColor());
         addColors(this.config.taggedSoundsCat2(), this.config.category2SoundColor());
         addColors(this.config.taggedSoundsCat3(), this.config.category3SoundColor());
+        addColors(this.config.taggedSoundsCat4(), this.config.category4SoundColor());
+        addColors(this.config.taggedSoundsCat5(), this.config.category5SoundColor());
+        addColors(this.config.taggedSoundsCat6(), this.config.category6SoundColor());
 
         displaySoundEffects = config.displaySoundEffects();
         displayAreaEffects = config.displayAreaSounds();

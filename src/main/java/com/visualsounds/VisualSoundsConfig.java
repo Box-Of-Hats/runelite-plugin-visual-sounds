@@ -104,10 +104,71 @@ public interface VisualSoundsConfig extends Config {
     }
 
     @ConfigItem(
+            keyName = "category4SoundColor",
+            name = "Sound Color (C4)",
+            description = "The color to show tagged sounds in",
+            position = 9
+    )
+    default Color category4SoundColor() {
+        return Color.GREEN;
+    }
+
+    @ConfigItem(
+            keyName = "taggedSoundsCat4",
+            name = "Tagged Sounds (C4)",
+            description = "A list of sounds that should be recoloured. Separate ids with commas (,)",
+            position = 10
+    )
+    default String taggedSoundsCat4() {
+        return "";
+    }
+
+    @ConfigItem(
+            keyName = "category5SoundColor",
+            name = "Sound Color (C5)",
+            description = "The color to show tagged sounds in",
+            position = 11
+    )
+    default Color category5SoundColor() {
+        return Color.MAGENTA;
+    }
+
+    @ConfigItem(
+            keyName = "taggedSoundsCat5",
+            name = "Tagged Sounds (C5)",
+            description = "A list of sounds that should be recoloured. Separate ids with commas (,)",
+            position = 12
+    )
+    default String taggedSoundsCat5() {
+        return "";
+    }
+
+    @ConfigItem(
+            keyName = "category6SoundColor",
+            name = "Sound Color (C6)",
+            description = "The color to show tagged sounds in",
+            position = 13
+    )
+    default Color category6SoundColor() {
+        return Color.CYAN;
+    }
+
+
+    @ConfigItem(
+            keyName = "taggedSoundsCat6",
+            name = "Tagged Sounds (C6)",
+            description = "A list of sounds that should be recoloured. Separate ids with commas (,)",
+            position = 14
+    )
+    default String taggedSoundsCat6() {
+        return "";
+    }
+
+    @ConfigItem(
             keyName = "ignoredSounds",
             name = "Ignored Sounds",
             description = "A list of sounds that should be ignored. Separate ids with commas (,)",
-            position = 9
+            position = 15
     )
     default String ignoredSounds() {
         return "";
@@ -117,7 +178,7 @@ public interface VisualSoundsConfig extends Config {
             keyName = "showOnlyTagged",
             name = "Show Only Tagged Sounds",
             description = "Show only the sounds that are recoloured.",
-            position = 10
+            position = 16
     )
     default boolean showOnlyTagged() {
         return false;
@@ -127,7 +188,7 @@ public interface VisualSoundsConfig extends Config {
             keyName = "showSoundNames",
             name = "Show Sound Names",
             description = "Show the names of sounds where possible",
-            position = 11
+            position = 17
     )
     default boolean showSoundNames() {
         return true;
@@ -137,7 +198,7 @@ public interface VisualSoundsConfig extends Config {
             keyName = "customSoundLabels",
             name = "Custom Sound Labels",
             description = "A list of custom sound labels. Format: soundId:label, separated by a new line (e.g. 369:Cow attacks)",
-            position = 12
+            position = 18
     )
     default String customSoundLabels() {
         return "";

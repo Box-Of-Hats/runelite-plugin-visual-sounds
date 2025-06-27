@@ -11,16 +11,16 @@ import javax.inject.Inject;
 import java.awt.*;
 import java.util.List;
 
-public class VisualSoundsOverlay extends OverlayPanel {
+public class AmbientSoundsOverlay extends OverlayPanel {
     private final VisualSoundsPlugin plugin;
 
     @Inject
-    public VisualSoundsOverlay(VisualSoundsPlugin plugin) {
+    public AmbientSoundsOverlay(VisualSoundsPlugin plugin) {
         super(plugin);
 
         setPosition(OverlayPosition.DYNAMIC);
         setPosition(OverlayPosition.DETACHED);
-        setPosition(OverlayPosition.ABOVE_CHATBOX_RIGHT);
+        setPosition(OverlayPosition.BOTTOM_LEFT);
         setPreferredSize(new Dimension(30, 200));
         setLayer(OverlayLayer.UNDER_WIDGETS);
         setPriority(OverlayPriority.LOW);
@@ -32,11 +32,11 @@ public class VisualSoundsOverlay extends OverlayPanel {
         List<LayoutableRenderableEntity> renderableEntities = panelComponent.getChildren();
         renderableEntities.clear();
 
-        List<GameSound> gameSoundList = this.plugin.gameSoundList.getGameSoundList();
+        List<GameSound> gameSoundList = this.plugin.ambientSounds.getGameSoundList();
 
         renderableEntities.add(
                 LineComponent.builder()
-                        .left("Visual sounds")
+                        .left("Ambient sounds")
                         .leftColor(Color.yellow)
                         .build());
 
@@ -48,6 +48,7 @@ public class VisualSoundsOverlay extends OverlayPanel {
                             .build());
             return super.render(graphics2D);
         }
+
 
         for (GameSound gs : gameSoundList) {
             renderableEntities.add(

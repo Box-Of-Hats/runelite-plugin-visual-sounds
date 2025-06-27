@@ -29,6 +29,14 @@ public interface VisualSoundsConfig extends Config {
         return false;
     }
 
+    @ConfigItem(
+            keyName = "displayAmbientSounds",
+            name="Ambient Sounds",
+            description = "Visualize ambient sounds",
+            position = 2
+    )
+    default boolean displayAmbientSounds() { return false; }
+
     @Range(
             min = 0,
             max = 15
@@ -37,7 +45,7 @@ public interface VisualSoundsConfig extends Config {
             keyName = "soundCountLimit",
             name = "Sound Count Limit",
             description = "The max number of sounds to show in the overlay",
-            position = 2
+            position = 3
     )
     default int soundCountLimit() {
         return 5;
@@ -47,7 +55,7 @@ public interface VisualSoundsConfig extends Config {
             keyName = "category1SoundColor",
             name = "Sound Color (C1)",
             description = "The color to show tagged sounds in",
-            position = 3
+            position = 4
     )
     default Color category1SoundColor() {
         return Color.RED;
@@ -57,7 +65,7 @@ public interface VisualSoundsConfig extends Config {
             keyName = "taggedSoundsCat1",
             name = "Tagged Sounds (C1)",
             description = "A list of sounds that should be recoloured. Separate ids with commas (,)",
-            position = 4
+            position = 5
     )
     default String taggedSoundsCat1() {
         return "";
@@ -67,7 +75,7 @@ public interface VisualSoundsConfig extends Config {
             keyName = "category2SoundColor",
             name = "Sound Color (C2)",
             description = "The color to show tagged sounds in",
-            position = 5
+            position = 6
     )
     default Color category2SoundColor() {
         return Color.BLUE;
@@ -77,7 +85,7 @@ public interface VisualSoundsConfig extends Config {
             keyName = "taggedSoundsCat2",
             name = "Tagged Sounds (C2)",
             description = "A list of sounds that should be recoloured. Separate ids with commas (,)",
-            position = 6
+            position = 7
     )
     default String taggedSoundsCat2() {
         return "";
@@ -87,7 +95,7 @@ public interface VisualSoundsConfig extends Config {
             keyName = "category3SoundColor",
             name = "Sound Color (C3)",
             description = "The color to show tagged sounds in",
-            position = 7
+            position = 8
     )
     default Color category3SoundColor() {
         return Color.YELLOW;
@@ -97,7 +105,7 @@ public interface VisualSoundsConfig extends Config {
             keyName = "taggedSoundsCat3",
             name = "Tagged Sounds (C3)",
             description = "A list of sounds that should be recoloured. Separate ids with commas (,)",
-            position = 8
+            position = 9
     )
     default String taggedSoundsCat3() {
         return "";
@@ -107,7 +115,7 @@ public interface VisualSoundsConfig extends Config {
             keyName = "category4SoundColor",
             name = "Sound Color (C4)",
             description = "The color to show tagged sounds in",
-            position = 9
+            position = 10
     )
     default Color category4SoundColor() {
         return Color.GREEN;
@@ -117,7 +125,7 @@ public interface VisualSoundsConfig extends Config {
             keyName = "taggedSoundsCat4",
             name = "Tagged Sounds (C4)",
             description = "A list of sounds that should be recoloured. Separate ids with commas (,)",
-            position = 10
+            position = 11
     )
     default String taggedSoundsCat4() {
         return "";
@@ -127,7 +135,7 @@ public interface VisualSoundsConfig extends Config {
             keyName = "category5SoundColor",
             name = "Sound Color (C5)",
             description = "The color to show tagged sounds in",
-            position = 11
+            position = 12
     )
     default Color category5SoundColor() {
         return Color.MAGENTA;
@@ -137,7 +145,7 @@ public interface VisualSoundsConfig extends Config {
             keyName = "taggedSoundsCat5",
             name = "Tagged Sounds (C5)",
             description = "A list of sounds that should be recoloured. Separate ids with commas (,)",
-            position = 12
+            position = 13
     )
     default String taggedSoundsCat5() {
         return "";
@@ -147,7 +155,7 @@ public interface VisualSoundsConfig extends Config {
             keyName = "category6SoundColor",
             name = "Sound Color (C6)",
             description = "The color to show tagged sounds in",
-            position = 13
+            position = 14
     )
     default Color category6SoundColor() {
         return Color.CYAN;
@@ -158,7 +166,7 @@ public interface VisualSoundsConfig extends Config {
             keyName = "taggedSoundsCat6",
             name = "Tagged Sounds (C6)",
             description = "A list of sounds that should be recoloured. Separate ids with commas (,)",
-            position = 14
+            position = 15
     )
     default String taggedSoundsCat6() {
         return "";
@@ -168,7 +176,7 @@ public interface VisualSoundsConfig extends Config {
             keyName = "ignoredSounds",
             name = "Ignored Sounds",
             description = "A list of sounds that should be ignored. Separate ids with commas (,)",
-            position = 15
+            position = 16
     )
     default String ignoredSounds() {
         return "";
@@ -178,7 +186,7 @@ public interface VisualSoundsConfig extends Config {
             keyName = "showOnlyTagged",
             name = "Show Only Tagged Sounds",
             description = "Show only the sounds that are recoloured.",
-            position = 16
+            position = 17
     )
     default boolean showOnlyTagged() {
         return false;
@@ -188,7 +196,7 @@ public interface VisualSoundsConfig extends Config {
             keyName = "showSoundNames",
             name = "Show Sound Names",
             description = "Show the names of sounds where possible",
-            position = 17
+            position = 18
     )
     default boolean showSoundNames() {
         return true;
@@ -198,7 +206,7 @@ public interface VisualSoundsConfig extends Config {
             keyName = "customSoundLabels",
             name = "Custom Sound Labels",
             description = "A list of custom sound labels. Format: soundId:label, separated by a new line (e.g. 369:Cow attacks)",
-            position = 18
+            position = 19
     )
     default String customSoundLabels() {
         return "";

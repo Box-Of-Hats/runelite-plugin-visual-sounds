@@ -2,6 +2,7 @@ package com.visualsounds;
 
 import com.google.inject.Provides;
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.AmbientSoundEffect;
 import net.runelite.api.Client;
 import net.runelite.api.Varbits;
 import net.runelite.api.coords.WorldPoint;
@@ -35,7 +36,8 @@ public class VisualSoundsPlugin extends Plugin {
     @Inject
     private VisualSoundsConfig config;
 
-    public GameSoundList gameSoundList = new GameSoundList();
+    public GameSoundList gameSoundList = new GameSoundList(15, false);
+    public GameSoundList ambientSounds = new GameSoundList(30, true);
 
     /**
      * Is the plugin currently disabled due to the player being in a blocked area?
@@ -44,8 +46,17 @@ public class VisualSoundsPlugin extends Plugin {
 
     private SoundNames soundNames;
 
+    /**
+     * Overlay for area and sound effects
+     */
     @Inject
-    private VisualSoundsOverlay overlay;
+    private VisualSoundsOverlay visualSoundsOverlay;
+
+    /**
+     * Overlay for ambient sounds
+     */
+    @Inject
+    private AmbientSoundsOverlay ambientSoundsOverlay;
 
     @Inject
     private OverlayManager overlayManager;
@@ -62,6 +73,7 @@ public class VisualSoundsPlugin extends Plugin {
 
     private boolean displaySoundEffects = true;
     private boolean displayAreaEffects = false;
+    private boolean displayAmbientEffects = false;
     private boolean showOnlyTagged = false;
 
     private int regionId = -1;
@@ -70,7 +82,8 @@ public class VisualSoundsPlugin extends Plugin {
     protected void startUp() throws Exception {
         log.info("Visual sounds started!");
         this.migrateOldConfigItems();
-        this.overlayManager.add(overlay);
+        this.overlayManager.add(visualSoundsOverlay);
+        this.overlayManager.add(ambientSoundsOverlay);
         this.soundNames = new SoundNames();
         this.reload();
     }
@@ -83,7 +96,8 @@ public class VisualSoundsPlugin extends Plugin {
     @Override
     protected void shutDown() throws Exception {
         log.info("Visual sounds stopped!");
-        this.overlayManager.remove(overlay);
+        this.overlayManager.remove(visualSoundsOverlay);
+        this.overlayManager.remove(ambientSoundsOverlay);
     }
 
     private <T> void migrateOldConfigItem(String key, Class<T> clazz) {
@@ -116,7 +130,7 @@ public class VisualSoundsPlugin extends Plugin {
      */
     private void reload() {
         this.gameSoundList.setMaxLength(config.soundCountLimit());
-        this.gameSoundList.add(new GameSound());
+        //this.gameSoundList.add(new GameSound());
         this.ignoredSounds = getNumbersFromConfig(this.config.ignoredSounds());
         this.soundColors = new HashMap<>();
         // Parse custom labels using colon as the delimiter.
@@ -130,7 +144,23 @@ public class VisualSoundsPlugin extends Plugin {
 
         displaySoundEffects = config.displaySoundEffects();
         displayAreaEffects = config.displayAreaSounds();
+        displayAmbientEffects = config.displayAmbientSounds();
         showOnlyTagged = config.showOnlyTagged();
+
+        //Hide ambient sounds overlay if not enabled in config
+        if (this.config.displayAmbientSounds()) {
+            this.overlayManager.add(ambientSoundsOverlay);
+        } else {
+            this.overlayManager.remove(ambientSoundsOverlay);
+        }
+
+        //Hide sounds overlay if not enabled in config
+        if (this.config.displayAreaSounds() || this.config.displaySoundEffects()){
+            this.overlayManager.add(visualSoundsOverlay);
+        } else {
+            this.overlayManager.remove(visualSoundsOverlay);
+        }
+
     }
 
     private static Set<Integer> getNumbersFromConfig(String source) {
@@ -159,6 +189,15 @@ public class VisualSoundsPlugin extends Plugin {
     @Subscribe
     public void onGameTick(GameTick event) {
         this.regionId = WorldPoint.fromLocalInstance(client, client.getLocalPlayer().getLocalLocation()).getRegionID();
+
+        // Ambient sound effects don't play in the same manner as other sounds. Handle them every tick
+        if (displayAmbientEffects) {
+            this.ambientSounds.clear();
+            for (AmbientSoundEffect ambientSoundEffect : client.getAmbientSoundEffects()) {
+                handleAmbientSoundEffect(ambientSoundEffect);
+            }
+        }
+
     }
 
     @Subscribe
@@ -179,21 +218,59 @@ public class VisualSoundsPlugin extends Plugin {
 
     /**
      * Handle a sound effect based on its id value
+     *
      * @param soundId The id value of the sound
      */
     private void handleSoundEffect(int soundId) {
-        if (ignoreBoss()){
+        GameSound gameSound = getGameSound(soundId);
+
+        if (gameSound != null) {
+            gameSoundList.add(gameSound);
+        }
+    }
+
+    /**
+     * Handle a given ambient sound effect.
+     *
+     * @param ambientSoundEffect The sound effect to handle
+     */
+    private void handleAmbientSoundEffect(AmbientSoundEffect ambientSoundEffect) {
+        int[] backgroundSoundEffectIds = ambientSoundEffect.getBackgroundSoundEffectIds();
+        if (backgroundSoundEffectIds != null) {
+            for (int backgroundSoundEffectId : backgroundSoundEffectIds) {
+                GameSound gameSound = getGameSound(backgroundSoundEffectId);
+                if (gameSound != null) {
+                    ambientSounds.add(gameSound);
+                }
+            }
+        }
+
+        GameSound gameSound = getGameSound(ambientSoundEffect.getSoundEffectId());
+        if (gameSound != null) {
+            ambientSounds.add(gameSound);
+        }
+    }
+
+    /**
+     * Get a GameSound for a given sound ID. Null will be returned if the sound ID cannot be handled
+     */
+    private GameSound getGameSound(int soundId) {
+        if (ignoreBoss()) {
             isDisabled = true;
-            return;
+            return null;
         }
         isDisabled = false;
 
         if (ignoredSounds.contains(soundId)) {
-            return;
+            return null;
         }
 
         if (showOnlyTagged && !soundColors.containsKey(soundId)) {
-            return;
+            return null;
+        }
+
+        if (soundId == 0) {
+            return null;
         }
 
         Color soundColor = soundColors.getOrDefault(soundId, Color.white);
@@ -209,7 +286,7 @@ public class VisualSoundsPlugin extends Plugin {
             }
         }
 
-        gameSoundList.add(gameSound);
+        return gameSound;
     }
 
     /**

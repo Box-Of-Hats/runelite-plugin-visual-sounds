@@ -37,7 +37,7 @@ public class GameSoundList {
     }
 
     public void add(GameSound gameSound) {
-        if (dedupe != null && dedupe.contains(gameSound.soundId)) {
+        if (dedupe != null && !dedupe.add(gameSound.soundId)) {
             return;
         }
 

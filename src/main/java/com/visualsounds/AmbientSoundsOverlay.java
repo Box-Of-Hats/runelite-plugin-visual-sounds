@@ -31,7 +31,7 @@ public class AmbientSoundsOverlay extends OverlayPanel {
         List<LayoutableRenderableEntity> renderableEntities = panelComponent.getChildren();
         renderableEntities.clear();
 
-        List<GameSound> gameSoundList = this.plugin.ambientSounds.getGameSoundList();
+        Iterable<GameSound> gameSoundList = this.plugin.ambientSounds.getGameSounds();
 
         renderableEntities.add(
                 LineComponent.builder()

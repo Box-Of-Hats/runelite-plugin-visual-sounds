@@ -1,14 +1,11 @@
 package com.visualsounds;
 
-import java.awt.*;
+import java.awt.Color;
 
 public class GameSound {
-    public int soundId = 0;
-    public Color color = Color.white;
-    public String label = "";
-
-    public GameSound() {
-    }
+    public final int soundId;
+    public Color color;
+    public String label;
 
     public GameSound(int soundId, Color color) {
         this.soundId = soundId;

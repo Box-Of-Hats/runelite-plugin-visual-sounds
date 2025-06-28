@@ -89,8 +89,10 @@ public class VisualSoundsPlugin extends Plugin {
     }
 
     @Subscribe
-    protected void onConfigChanged(ConfigChanged configChangedEvent) {
-        this.reload();
+    public void onConfigChanged(ConfigChanged configChangedEvent) {
+        if ("visualsounds".equals(configChangedEvent.getGroup())) {
+            this.reload();
+        }
     }
 
     @Override

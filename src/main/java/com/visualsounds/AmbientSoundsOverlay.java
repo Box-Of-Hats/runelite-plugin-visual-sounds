@@ -3,7 +3,6 @@ package com.visualsounds;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.OverlayPosition;
-import net.runelite.client.ui.overlay.OverlayPriority;
 import net.runelite.client.ui.overlay.components.LayoutableRenderableEntity;
 import net.runelite.client.ui.overlay.components.LineComponent;
 
@@ -19,11 +18,11 @@ public class AmbientSoundsOverlay extends OverlayPanel {
         super(plugin);
 
         setPosition(OverlayPosition.DYNAMIC);
-        setPosition(OverlayPosition.DETACHED);
+        setMovable(true);
         setPosition(OverlayPosition.BOTTOM_LEFT);
         setPreferredSize(new Dimension(30, 200));
         setLayer(OverlayLayer.UNDER_WIDGETS);
-        setPriority(OverlayPriority.LOW);
+        setPriority(PRIORITY_LOW);
         this.plugin = plugin;
     }
 

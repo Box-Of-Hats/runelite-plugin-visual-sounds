@@ -32,7 +32,7 @@ public class VisualSoundsOverlay extends OverlayPanel {
         List<LayoutableRenderableEntity> renderableEntities = panelComponent.getChildren();
         renderableEntities.clear();
 
-        List<GameSound> gameSoundList = this.plugin.gameSoundList.getGameSoundList();
+        Iterable<GameSound> gameSoundList = this.plugin.gameSoundList.getGameSounds();
 
         renderableEntities.add(
                 LineComponent.builder()

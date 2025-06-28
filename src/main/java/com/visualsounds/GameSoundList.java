@@ -1,49 +1,57 @@
 package com.visualsounds;
 
-import java.util.ArrayList;
-import java.util.List;
+import lombok.Setter;
+
+import java.util.ArrayDeque;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.Set;
 
 public class GameSoundList {
-    private List<GameSound> gameSoundList = new ArrayList<>();
-    private int maxLength = 10;
+    private final Deque<GameSound> gameSounds = new ArrayDeque<>();
+
+    @Setter
+    private int maxLength;
+
     /**
-     * Should duplicate sounds be ignored?
+     * Contains the unique sound IDs within {@link #gameSounds} if deduplication should be applied
      */
-    private boolean dedupe = false;
+    private final Set<Integer> dedupe;
 
     public GameSoundList(int maxLength, boolean dedupe) {
         this.maxLength = maxLength;
-        this.dedupe = dedupe;
+        if (dedupe) {
+            this.dedupe = new HashSet<>();
+        } else {
+            this.dedupe = null;
+        }
     }
 
-    public void clear(){
-        this.gameSoundList.clear();
+    public void clear() {
+        this.gameSounds.clear();
+        if (this.dedupe != null) {
+            this.dedupe.clear();
+        }
     }
 
     public void add(GameSound gameSound) {
-        if (dedupe) {
-            boolean alreadyExists = this.gameSoundList.stream().filter(gs -> gs.soundId == gameSound.soundId).count() > 0;
-            if (alreadyExists) {
-                return;
+        if (dedupe != null && dedupe.contains(gameSound.soundId)) {
+            return;
+        }
+
+        this.gameSounds.offerFirst(gameSound);
+
+        while (this.gameSounds.size() > maxLength) {
+            GameSound evicted = this.gameSounds.removeLast();
+            if (dedupe != null) {
+                dedupe.remove(evicted.soundId);
             }
-
-            this.gameSoundList.add(0, gameSound);
-        } else {
-            this.gameSoundList.add(0, gameSound);
-        }
-
-        if (this.gameSoundList.size() > maxLength) {
-            this.gameSoundList = new ArrayList<>(gameSoundList.subList(0, maxLength));
         }
     }
 
-    public List<GameSound> getGameSoundList() {
-        return this.gameSoundList;
-    }
-
-    public void setMaxLength(int maxLength) {
-        this.maxLength = maxLength;
+    public Collection<GameSound> getGameSounds() {
+        return Collections.unmodifiableCollection(this.gameSounds);
     }
 }
-
-

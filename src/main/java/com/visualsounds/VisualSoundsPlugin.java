@@ -4,11 +4,11 @@ import com.google.inject.Provides;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.AmbientSoundEffect;
 import net.runelite.api.Client;
-import net.runelite.api.Varbits;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.AreaSoundEffectPlayed;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.SoundEffectPlayed;
+import net.runelite.api.gameval.VarbitID;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
@@ -315,9 +315,10 @@ public class VisualSoundsPlugin extends Plugin {
         }
 
         // disable plugin in raids
-        return client.getVarbitValue(Varbits.IN_RAID) > 0
-                || client.getVarbitValue(Varbits.TOA_RAID_LEVEL) > 0
-                || client.getVarbitValue(Varbits.THEATRE_OF_BLOOD) > 0;
+
+        return client.getVarbitValue(VarbitID.RAIDS_CLIENT_INDUNGEON) > 0
+                || client.getVarbitValue(VarbitID.TOA_CLIENT_RAID_LEVEL) > 0
+                || client.getVarbitValue(VarbitID.TOB_CLIENT_PARTYSTATUS) > 0;
     }
 
     @Provides

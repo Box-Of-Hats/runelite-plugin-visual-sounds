@@ -8,9 +8,21 @@ This is aimed at players who want to be able to "hear" game sounds but are unabl
 
 ## Features
 
+-   Show sound effects, area sounds or ambient sounds
 -   Show a specified number of sound effect IDs on screen
 -   Configurable list of ignored sound effects
 -   Configurable list of highlighted sound effects
 -   Toggle sound names on or off
+-   Pairs great with [Annoyance mute](https://runelite.net/plugin-hub/show/annoyance-mute)
 
-![In-game screenshot](docs/in-game.png)
+### Showing sound effects
+
+![In-game screenshot](docs/sound-effects.png)
+
+### Showing ambient sounds
+
+![Ambient sound overlay](docs/ambient-sounds.png)
+
+### Available config options
+
+![Configuration options](docs/config-options.png)

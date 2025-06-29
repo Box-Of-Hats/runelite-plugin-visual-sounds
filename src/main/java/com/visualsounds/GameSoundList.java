@@ -1,7 +1,5 @@
 package com.visualsounds;
 
-import lombok.Setter;
-
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Collections;
@@ -12,7 +10,6 @@ import java.util.Set;
 public class GameSoundList {
     private final Deque<GameSound> gameSounds = new ArrayDeque<>();
 
-    @Setter
     private int maxLength;
 
     /**
@@ -42,7 +39,19 @@ public class GameSoundList {
         }
 
         this.gameSounds.offerFirst(gameSound);
+        this.trimToCapacity();
+    }
 
+    public Collection<GameSound> getGameSounds() {
+        return Collections.unmodifiableCollection(this.gameSounds);
+    }
+
+    public void setMaxLength(int maxLength) {
+        this.maxLength = maxLength;
+        this.trimToCapacity();
+    }
+
+    private void trimToCapacity() {
         while (this.gameSounds.size() > maxLength) {
             GameSound evicted = this.gameSounds.removeLast();
             if (dedupe != null) {
@@ -51,7 +60,4 @@ public class GameSoundList {
         }
     }
 
-    public Collection<GameSound> getGameSounds() {
-        return Collections.unmodifiableCollection(this.gameSounds);
-    }
 }

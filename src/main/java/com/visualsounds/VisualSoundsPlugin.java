@@ -9,6 +9,7 @@ import net.runelite.api.events.AreaSoundEffectPlayed;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.SoundEffectPlayed;
 import net.runelite.api.gameval.VarbitID;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
@@ -33,6 +34,9 @@ import java.util.stream.Collectors;
 public class VisualSoundsPlugin extends Plugin {
     @Inject
     private Client client;
+
+    @Inject
+    private ClientThread clientThread;
 
     @Inject
     private VisualSoundsConfig config;
@@ -86,13 +90,13 @@ public class VisualSoundsPlugin extends Plugin {
         this.overlayManager.add(visualSoundsOverlay);
         this.overlayManager.add(ambientSoundsOverlay);
         this.soundNames = new SoundNames();
-        this.reload();
+        clientThread.invoke(this::reload);
     }
 
     @Subscribe
     public void onConfigChanged(ConfigChanged configChangedEvent) {
         if (CONFIG_GROUP.equals(configChangedEvent.getGroup())) {
-            this.reload();
+            clientThread.invoke(this::reload);
         }
     }
 
@@ -167,7 +171,6 @@ public class VisualSoundsPlugin extends Plugin {
         } else {
             this.overlayManager.remove(visualSoundsOverlay);
         }
-
     }
 
     private static Set<Integer> getNumbersFromConfig(String source) {

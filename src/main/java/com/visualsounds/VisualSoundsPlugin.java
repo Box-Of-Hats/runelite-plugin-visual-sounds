@@ -18,10 +18,11 @@ import net.runelite.client.ui.overlay.OverlayManager;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import javax.inject.Inject;
-import java.awt.*;
+import java.awt.Color;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -36,8 +37,8 @@ public class VisualSoundsPlugin extends Plugin {
     @Inject
     private VisualSoundsConfig config;
 
-    public GameSoundList gameSoundList = new GameSoundList(15, false);
-    public GameSoundList ambientSounds = new GameSoundList(30, true);
+    public final GameSoundList gameSoundList = new GameSoundList(15, false);
+    public final GameSoundList ambientSounds = new GameSoundList(30, true);
 
     /**
      * Is the plugin currently disabled due to the player being in a blocked area?
@@ -67,8 +68,8 @@ public class VisualSoundsPlugin extends Plugin {
     private static final String OLD_CONFIG_GROUP = "example";
     private static final String CONFIG_GROUP = "visualsounds";
 
-    private HashMap<Integer, Color> soundColors = new HashMap<>();
-    private HashMap<Integer, String> customLabels = new HashMap<>();
+    private Map<Integer, Color> soundColors = new HashMap<>();
+    private Map<Integer, String> customLabels = new HashMap<>();
     private Set<Integer> ignoredSounds = new HashSet<>();
 
     private boolean displaySoundEffects = true;
@@ -79,8 +80,8 @@ public class VisualSoundsPlugin extends Plugin {
     private int regionId = -1;
 
     @Override
-    protected void startUp() throws Exception {
-        log.info("Visual sounds started!");
+    protected void startUp() {
+        log.debug("Visual sounds started!");
         this.migrateOldConfigItems();
         this.overlayManager.add(visualSoundsOverlay);
         this.overlayManager.add(ambientSoundsOverlay);
@@ -96,10 +97,14 @@ public class VisualSoundsPlugin extends Plugin {
     }
 
     @Override
-    protected void shutDown() throws Exception {
-        log.info("Visual sounds stopped!");
+    protected void shutDown() {
+        log.debug("Visual sounds stopped!");
         this.overlayManager.remove(visualSoundsOverlay);
         this.overlayManager.remove(ambientSoundsOverlay);
+        this.ignoredSounds.clear();
+        this.soundColors.clear();
+        this.customLabels.clear();
+        this.soundNames = null;
     }
 
     private <T> void migrateOldConfigItem(String key, Class<T> clazz) {

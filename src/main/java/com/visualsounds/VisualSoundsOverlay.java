@@ -12,6 +12,7 @@ import java.util.List;
 
 public class VisualSoundsOverlay extends OverlayPanel {
     private final VisualSoundsPlugin plugin;
+    public boolean displayHeader;
 
     @Inject
     public VisualSoundsOverlay(VisualSoundsPlugin plugin) {
@@ -24,6 +25,7 @@ public class VisualSoundsOverlay extends OverlayPanel {
         setLayer(OverlayLayer.UNDER_WIDGETS);
         setPriority(PRIORITY_LOW);
         this.plugin = plugin;
+        displayHeader = plugin.displayOverlayHeaders;
     }
 
     @Override
@@ -33,11 +35,13 @@ public class VisualSoundsOverlay extends OverlayPanel {
 
         Iterable<GameSound> gameSoundList = this.plugin.gameSoundList.getGameSounds();
 
-        renderableEntities.add(
-                LineComponent.builder()
-                        .left("Visual sounds")
-                        .leftColor(Color.yellow)
-                        .build());
+        if (displayHeader) {
+            renderableEntities.add(
+                    LineComponent.builder()
+                            .left("Visual sounds")
+                            .leftColor(Color.yellow)
+                            .build());
+        }
 
         if (this.plugin.isDisabled) {
             // Show disabled message if player is in a blocked area

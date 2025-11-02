@@ -80,6 +80,7 @@ public class VisualSoundsPlugin extends Plugin {
     private boolean displayAreaEffects = false;
     private boolean displayAmbientEffects = false;
     private boolean showOnlyTagged = false;
+    public boolean displayOverlayHeaders = true;
 
     private int regionId = -1;
 
@@ -157,9 +158,11 @@ public class VisualSoundsPlugin extends Plugin {
         displayAreaEffects = config.displayAreaSounds();
         displayAmbientEffects = config.displayAmbientSounds();
         showOnlyTagged = config.showOnlyTagged();
+        displayOverlayHeaders = config.displayOverlayHeaders();
 
         //Hide ambient sounds overlay if not enabled in config
         if (this.config.displayAmbientSounds()) {
+            ambientSoundsOverlay.displayHeader = displayOverlayHeaders;
             this.overlayManager.add(ambientSoundsOverlay);
         } else {
             this.overlayManager.remove(ambientSoundsOverlay);
@@ -167,6 +170,7 @@ public class VisualSoundsPlugin extends Plugin {
 
         //Hide sounds overlay if not enabled in config
         if (this.config.displayAreaSounds() || this.config.displaySoundEffects()){
+            visualSoundsOverlay.displayHeader = displayOverlayHeaders;
             this.overlayManager.add(visualSoundsOverlay);
         } else {
             this.overlayManager.remove(visualSoundsOverlay);

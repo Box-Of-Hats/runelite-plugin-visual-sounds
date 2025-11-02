@@ -211,4 +211,14 @@ public interface VisualSoundsConfig extends Config {
     default String customSoundLabels() {
         return "";
     }
+
+    @ConfigItem(
+            keyName = "hideOverlayHeaders",
+            name = "Hide Overlay Headers",
+            description = "Hide the 'Visual sounds' and 'Ambient sounds' headers from the overlays",
+            position = 20
+    )
+    default boolean hideOverlayHeaders() {
+        return false;
+    }
 }

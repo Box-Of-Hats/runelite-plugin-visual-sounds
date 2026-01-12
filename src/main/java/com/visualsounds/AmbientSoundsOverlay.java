@@ -1,5 +1,6 @@
 package com.visualsounds;
 
+import java.util.HashMap;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.OverlayPosition;
@@ -33,7 +34,6 @@ public class AmbientSoundsOverlay extends OverlayPanel {
         List<LayoutableRenderableEntity> renderableEntities = panelComponent.getChildren();
         renderableEntities.clear();
 
-        Iterable<GameSound> gameSoundList = this.plugin.ambientSounds.getGameSounds();
 
         if (displayHeader) {
             renderableEntities.add(
@@ -52,13 +52,22 @@ public class AmbientSoundsOverlay extends OverlayPanel {
             return super.render(graphics2D);
         }
 
+		HashMap<GameSound, GameSoundList> sounds = this.plugin.ambientSounds;
+		for (GameSound key : sounds.keySet()) {
+			renderableEntities.add(
+				LineComponent.builder()
+					.leftColor(key.color).left(key.label)
+					.build());
 
-        for (GameSound gs : gameSoundList) {
-            renderableEntities.add(
-                    LineComponent.builder()
-                            .leftColor(gs.color).left(gs.label)
-                            .build());
-        }
+			// these are sub ambient sounds
+			Iterable<GameSound> gameSoundList = sounds.get(key).getGameSounds();
+			for (GameSound gs : gameSoundList) {
+				renderableEntities.add(
+					LineComponent.builder()
+						.leftColor(gs.color).right(gs.label)
+						.build());
+			}
+		}
 
         return super.render(graphics2D);
     }

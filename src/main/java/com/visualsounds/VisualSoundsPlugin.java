@@ -4,8 +4,10 @@ import com.google.inject.Provides;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.AmbientSoundEffect;
 import net.runelite.api.Client;
+import net.runelite.api.GameState;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.AreaSoundEffectPlayed;
+import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.SoundEffectPlayed;
 import net.runelite.api.gameval.VarbitID;
@@ -42,7 +44,7 @@ public class VisualSoundsPlugin extends Plugin {
     private VisualSoundsConfig config;
 
     public final GameSoundList gameSoundList = new GameSoundList(15, false);
-    public final GameSoundList ambientSounds = new GameSoundList(30, true);
+	public final HashMap<GameSound, GameSoundList> ambientSounds = new HashMap<>();
 
     /**
      * Is the plugin currently disabled due to the player being in a blocked area?
@@ -175,6 +177,15 @@ public class VisualSoundsPlugin extends Plugin {
         } else {
             this.overlayManager.remove(visualSoundsOverlay);
         }
+
+		clientThread.invoke(() ->
+		{
+			// Reload the scene to reapply ambient sounds
+			if (client.getGameState() == GameState.LOGGED_IN)
+			{
+				client.setGameState(GameState.LOADING);
+			}
+		});
     }
 
     private static Set<Integer> getNumbersFromConfig(String source) {
@@ -203,18 +214,27 @@ public class VisualSoundsPlugin extends Plugin {
     @Subscribe
     public void onGameTick(GameTick event) {
         this.regionId = WorldPoint.fromLocalInstance(client, client.getLocalPlayer().getLocalLocation()).getRegionID();
-
-        // Ambient sound effects don't play in the same manner as other sounds. Handle them every tick
-        if (displayAmbientEffects) {
-            this.ambientSounds.clear();
-            for (AmbientSoundEffect ambientSoundEffect : client.getAmbientSoundEffects()) {
-                handleAmbientSoundEffect(ambientSoundEffect);
-            }
-        }
-
     }
 
-    @Subscribe
+	@Subscribe(priority = -3)
+	public void onGameStateChanged(GameStateChanged gameStateChanged)
+	{
+		GameState gameState = gameStateChanged.getGameState();
+
+		// on map load ambient sounds
+		if (gameState == GameState.LOGGED_IN)
+		{
+			if (displayAmbientEffects) {
+				this.ambientSounds.clear();
+				for (AmbientSoundEffect ambientSoundEffect : client.getAmbientSoundEffects()) {
+					handleAmbientSoundEffect(ambientSoundEffect);
+				}
+			}
+		}
+	}
+
+
+	@Subscribe(priority = -3)
     public void onSoundEffectPlayed(SoundEffectPlayed soundEffectPlayed) {
         if (!displaySoundEffects) {
             return;
@@ -222,7 +242,7 @@ public class VisualSoundsPlugin extends Plugin {
         handleSoundEffect(soundEffectPlayed.getSoundId());
     }
 
-    @Subscribe
+	@Subscribe(priority = -3)
     public void onAreaSoundEffectPlayed(AreaSoundEffectPlayed areaSoundEffectPlayed) {
         if (!displayAreaEffects) {
             return;
@@ -250,18 +270,42 @@ public class VisualSoundsPlugin extends Plugin {
      */
     private void handleAmbientSoundEffect(AmbientSoundEffect ambientSoundEffect) {
         int[] backgroundSoundEffectIds = ambientSoundEffect.getBackgroundSoundEffectIds();
-        if (backgroundSoundEffectIds != null) {
+		GameSound gameSoundPrimary = getGameSound(ambientSoundEffect.getSoundEffectId());
+		if (gameSoundPrimary != null)
+		{
+			// doing a ambientSounds.containsKey didn't work so I did this.
+			if (ambientSounds.size() == 0)
+			{
+				ambientSounds.put(gameSoundPrimary, new GameSoundList(30, true));
+			}
+			else
+			{
+
+				boolean newAmbientSound = true;
+				for (GameSound gs: ambientSounds.keySet())
+				{
+					if (gs.equals(gameSoundPrimary))
+					{
+						newAmbientSound = false;
+						gameSoundPrimary = gs;
+					}
+				}
+				if (newAmbientSound)
+				{
+					ambientSounds.put(gameSoundPrimary, new GameSoundList(30, true));
+				}
+			}
+		}
+
+        if (backgroundSoundEffectIds != null && ambientSounds.containsKey(gameSoundPrimary)) {
             for (int backgroundSoundEffectId : backgroundSoundEffectIds) {
                 GameSound gameSound = getGameSound(backgroundSoundEffectId);
                 if (gameSound != null) {
-                    ambientSounds.add(gameSound);
-                }
+					GameSoundList ambientSoundList = ambientSounds.get(gameSoundPrimary);
+					ambientSoundList.add(gameSound);
+					ambientSounds.put(gameSoundPrimary, ambientSoundList);
+				}
             }
-        }
-
-        GameSound gameSound = getGameSound(ambientSoundEffect.getSoundEffectId());
-        if (gameSound != null) {
-            ambientSounds.add(gameSound);
         }
     }
 

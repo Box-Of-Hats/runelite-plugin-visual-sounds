@@ -372,6 +372,11 @@ public class VisualSoundsPlugin extends Plugin {
             return true;
         }
 
+		// disable plugin in Gauntlet & Corrupted Gauntlet
+		if (regionId == 7768 || regionId == 7512) {
+			return true;
+		}
+
         // disable plugin in raids
 
         return client.getVarbitValue(VarbitID.RAIDS_CLIENT_INDUNGEON) > 0

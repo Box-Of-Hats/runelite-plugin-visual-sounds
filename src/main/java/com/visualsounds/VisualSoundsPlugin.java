@@ -2,9 +2,11 @@ package com.visualsounds;
 
 import com.google.inject.Provides;
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.AmbientSoundComposition;
 import net.runelite.api.AmbientSoundEffect;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
+import net.runelite.api.RandomSound;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.AreaSoundEffectPlayed;
 import net.runelite.api.events.GameStateChanged;
@@ -52,6 +54,7 @@ public class VisualSoundsPlugin extends Plugin {
     public boolean isDisabled = false;
 
     private SoundNames soundNames;
+    private AmbientSoundNames ambientSoundNames;
 
     /**
      * Overlay for area and sound effects
@@ -93,6 +96,7 @@ public class VisualSoundsPlugin extends Plugin {
         this.overlayManager.add(visualSoundsOverlay);
         this.overlayManager.add(ambientSoundsOverlay);
         this.soundNames = new SoundNames();
+        this.ambientSoundNames = new AmbientSoundNames();
         clientThread.invoke(this::reload);
     }
 
@@ -112,6 +116,7 @@ public class VisualSoundsPlugin extends Plugin {
         this.soundColors.clear();
         this.customLabels.clear();
         this.soundNames = null;
+        this.ambientSoundNames = null;
     }
 
     private <T> void migrateOldConfigItem(String key, Class<T> clazz) {
@@ -229,6 +234,7 @@ public class VisualSoundsPlugin extends Plugin {
 				for (AmbientSoundEffect ambientSoundEffect : client.getAmbientSoundEffects()) {
 					handleAmbientSoundEffect(ambientSoundEffect);
 				}
+				handleAmbientSoundEffect(client.getAmbientSound());
 			}
 		}
 	}
@@ -269,7 +275,8 @@ public class VisualSoundsPlugin extends Plugin {
      * @param ambientSoundEffect The sound effect to handle
      */
     private void handleAmbientSoundEffect(AmbientSoundEffect ambientSoundEffect) {
-        int[] backgroundSoundEffectIds = ambientSoundEffect.getBackgroundSoundEffectIds();
+        RandomSound randomSound = ambientSoundEffect.getRandomSound();
+        int[] backgroundSoundEffectIds = randomSound != null ? randomSound.getSoundEffectIds() : null;
 		GameSound gameSoundPrimary = getGameSound(ambientSoundEffect.getSoundEffectId());
 		if (gameSoundPrimary != null)
 		{
@@ -308,6 +315,53 @@ public class VisualSoundsPlugin extends Plugin {
             }
         }
     }
+
+	/**
+	 * Handle a given ambient sound effect.
+	 *
+	 * @param ambientSoundComposition The sound effect to handle
+	 */
+	private void handleAmbientSoundEffect(AmbientSoundComposition ambientSoundComposition) {
+		if (ambientSoundComposition == null)
+			return;
+
+		// The primary is the ambient sound itself. Its id is an AmbientSoundID, not a SoundEffectID,
+		// so it is not run through getGameSound and is named using AmbientSoundNames instead.
+		GameSound gameSoundPrimary = new GameSound(ambientSoundComposition.getId(), Color.white);
+		String ambientSoundName = config.showSoundNames() ? this.ambientSoundNames.GetSoundName(gameSoundPrimary.soundId) : null;
+		gameSoundPrimary.label = ambientSoundName != null
+			? String.format("%s (%d)", ambientSoundName, gameSoundPrimary.soundId)
+			: String.format("Ambient sound (%d)", gameSoundPrimary.soundId);
+
+		// doing a ambientSounds.containsKey didn't work so I did this.
+		GameSoundList ambientSoundList = null;
+		for (java.util.Map.Entry<GameSound, GameSoundList> entry : ambientSounds.entrySet())
+		{
+			if (entry.getKey().equals(gameSoundPrimary))
+			{
+				ambientSoundList = entry.getValue();
+				break;
+			}
+		}
+		if (ambientSoundList == null)
+		{
+			ambientSoundList = new GameSoundList(30, true);
+			ambientSounds.put(gameSoundPrimary, ambientSoundList);
+		}
+
+		// the random sounds are the sounds that belong to the ambient sound
+		for (RandomSound randomSound : ambientSoundComposition.getRandomSounds())
+		{
+			for (int randomSoundEffectId : randomSound.getSoundEffectIds())
+			{
+				GameSound gameSound = getGameSound(randomSoundEffectId);
+				if (gameSound != null)
+				{
+					ambientSoundList.add(gameSound);
+				}
+			}
+		}
+	}
 
     /**
      * Get a GameSound for a given sound ID. Null will be returned if the sound ID cannot be handled

@@ -187,15 +187,6 @@ public class VisualSoundsPlugin extends Plugin {
         } else {
             this.overlayManager.remove(visualSoundsOverlay);
         }
-
-		clientThread.invoke(() ->
-		{
-			// Reload the scene to reapply ambient sounds
-			if (client.getGameState() == GameState.LOGGED_IN)
-			{
-				client.setGameState(GameState.LOADING);
-			}
-		});
     }
 
     private static Set<Integer> getNumbersFromConfig(String source) {

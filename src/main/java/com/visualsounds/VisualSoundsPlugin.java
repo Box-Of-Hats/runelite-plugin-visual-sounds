@@ -92,6 +92,7 @@ public class VisualSoundsPlugin extends Plugin {
     public boolean displayOverlayHeaders = true;
 
     private int regionId = -1;
+    private int plane = -1;
 
     @Override
     protected void startUp() {
@@ -222,7 +223,9 @@ public class VisualSoundsPlugin extends Plugin {
 
     @Subscribe
     public void onGameTick(GameTick event) {
-        this.regionId = WorldPoint.fromLocalInstance(client, client.getLocalPlayer().getLocalLocation()).getRegionID();
+        WorldPoint playerLocation = WorldPoint.fromLocalInstance(client, client.getLocalPlayer().getLocalLocation());
+        this.regionId = playerLocation.getRegionID();
+        this.plane = playerLocation.getPlane();
     }
 
 	@Subscribe(priority = -3)
@@ -410,30 +413,10 @@ public class VisualSoundsPlugin extends Plugin {
      * @see <a href="https://secure.runescape.com/m=news/third-party-client-guidelines?oldschool=1">Guidelines</a>
      */
     private boolean ignoreBoss() {
-        // disable plugin for Alchemical Hydra
-        if (regionId == 5536) {
+        // disable plugin in regions listed in DisabledRegions
+        if (DisabledRegions.isDisabled(regionId, plane)) {
             return true;
         }
-
-        // disable plugin for DT2 bosses (Vardorvis, Leviathan, Whisperer, Sucellus)
-        if (regionId == 4405 || regionId == 8291 || regionId == 10595 || regionId == 12132) {
-            return true;
-        }
-
-        // disable plugin for Vorkath
-        if (regionId == 9023) {
-            return true;
-        }
-
-        // disable plugin in Inferno & TzHaar Fight Cave
-        if (regionId == 9043 || regionId == 9551) {
-            return true;
-        }
-
-		// disable plugin in Gauntlet & Corrupted Gauntlet
-		if (regionId == 7768 || regionId == 7512) {
-			return true;
-		}
 
         // disable plugin in raids
 

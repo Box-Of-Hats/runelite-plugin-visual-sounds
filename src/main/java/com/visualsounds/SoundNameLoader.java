@@ -24,7 +24,7 @@ final class SoundNameLoader
 	{
 	}
 
-	static Map<Integer, String> load(String resourceName)
+	static Map<Integer, String> load(Gson gson, String resourceName)
 	{
 		try (InputStream in = SoundNameLoader.class.getResourceAsStream(resourceName))
 		{
@@ -35,7 +35,7 @@ final class SoundNameLoader
 			}
 			try (Reader reader = new InputStreamReader(in, StandardCharsets.UTF_8))
 			{
-				Map<Integer, String> names = new Gson().fromJson(reader, MAP_TYPE);
+				Map<Integer, String> names = gson.fromJson(reader, MAP_TYPE);
 				return names != null ? names : Collections.emptyMap();
 			}
 		}

@@ -1,5 +1,6 @@
 package com.visualsounds;
 
+import com.google.gson.Gson;
 import com.google.inject.Provides;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.AmbientSoundComposition;
@@ -74,6 +75,9 @@ public class VisualSoundsPlugin extends Plugin {
     @Inject
     private ConfigManager configManager;
 
+    @Inject
+    private Gson gson;
+
     private static final String OLD_CONFIG_GROUP = "example";
     private static final String CONFIG_GROUP = "visualsounds";
 
@@ -95,8 +99,8 @@ public class VisualSoundsPlugin extends Plugin {
         this.migrateOldConfigItems();
         this.overlayManager.add(visualSoundsOverlay);
         this.overlayManager.add(ambientSoundsOverlay);
-        this.soundNames = new SoundNames();
-        this.ambientSoundNames = new AmbientSoundNames();
+        this.soundNames = new SoundNames(gson);
+        this.ambientSoundNames = new AmbientSoundNames(gson);
         clientThread.invoke(this::reload);
     }
 

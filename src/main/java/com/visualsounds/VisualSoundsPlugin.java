@@ -102,13 +102,14 @@ public class VisualSoundsPlugin extends Plugin {
         this.overlayManager.add(ambientSoundsOverlay);
         this.soundNames = new SoundNames(gson);
         this.ambientSoundNames = new AmbientSoundNames(gson);
-        clientThread.invoke(this::reload);
+        clientThread.invoke(() -> reload(true));
     }
 
     @Subscribe
     public void onConfigChanged(ConfigChanged configChangedEvent) {
         if (CONFIG_GROUP.equals(configChangedEvent.getGroup())) {
-            clientThread.invoke(this::reload);
+            boolean reloadScene = "displayAmbientSounds".equals(configChangedEvent.getKey());
+            clientThread.invoke(() -> reload(reloadScene));
         }
     }
 
@@ -151,8 +152,10 @@ public class VisualSoundsPlugin extends Plugin {
 
     /**
      * Reload config options
+     *
+     * @param reloadScene Whether to reload the scene to reapply ambient sounds
      */
-    private void reload() {
+    private void reload(boolean reloadScene) {
         this.gameSoundList.setMaxLength(config.soundCountLimit());
         //this.gameSoundList.add(new GameSound());
         this.ignoredSounds = getNumbersFromConfig(this.config.ignoredSounds());
@@ -186,6 +189,11 @@ public class VisualSoundsPlugin extends Plugin {
             this.overlayManager.add(visualSoundsOverlay);
         } else {
             this.overlayManager.remove(visualSoundsOverlay);
+        }
+
+        if (reloadScene && client.getGameState() == GameState.LOGGED_IN) {
+            // Reload the scene to reapply ambient sounds
+            client.setGameState(GameState.LOADING);
         }
     }
 
